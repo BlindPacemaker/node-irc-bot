@@ -1,6 +1,7 @@
+'use strict';
+
 require('dotenv').config();
 const irc = require('irc');
-const axios = require('axios');
 
 const weather = require('./weather');
 const doKarma = require('./karma');
@@ -39,15 +40,20 @@ client.addListener('message', function (from, to, message) {
   console.log('TO: ', to);
   console.log('MESSAGE: ', message);
 
-  if(message.startsWith('!highfive')) {
-    const recipient = message.split(' ')[1];
+  if(message.length > 150) {
+    client.say(`${process.env.CHANNEL}`, "Too much words brotha!");
+    return;
+  }
 
+  if(message.startsWith('!highfive')) {
+    const recipient = message.split(' ')[1] || null;
     doKarma(recipient, client);
 
   }
 
-  if (message.startsWith('!help ')) {
+  if (message.startsWith('!help')) {
     console.log('STARTS WITH HELP');
+    // TODO: add function that will write common list of commands for jabbadebott
     client.say(`${process.env.CHANNEL}`, "No!");
   }
   if (message.startsWith('!w ')) {
