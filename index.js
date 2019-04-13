@@ -32,7 +32,7 @@ const client = new irc.Client('irc.freenode.net', 'jabbadebott', {
 
 setTimeout(() => {
   client.say('NickServ', `identify ${process.env.PASSWORD}`);
-  // client.join(`${process.env.CHANNEL}`);
+  client.join(`${process.env.CHANNEL}`);
 }, 20000);
 
 client.addListener('message', function (from, to, message) {
@@ -40,28 +40,43 @@ client.addListener('message', function (from, to, message) {
   console.log('TO: ', to);
   console.log('MESSAGE: ', message);
 
-  if(message.length > 150) {
-    client.say(`${process.env.CHANNEL}`, "Too much words brotha!");
-    return;
+  if (message.startsWith('good bot')) {
+    client.say(`${process.env.CHANNEL}`, "Don\'t patronise me.");
   }
 
   if(message.startsWith('!highfive')) {
+    if(message.length > 150) {
+      client.say(`${process.env.CHANNEL}`, "Too much words brotha!");
+      return;
+    }
     const recipient = message.split(' ')[1] || null;
     doKarma(recipient, client);
-
   }
 
   if (message.startsWith('!help')) {
-    console.log('STARTS WITH HELP');
+    if(message.length > 150) {
+      client.say(`${process.env.CHANNEL}`, "Too much words brotha!");
+      return;
+    }
     // TODO: add function that will write common list of commands for jabbadebott
     client.say(`${process.env.CHANNEL}`, "No!");
   }
   if (message.startsWith('!w ')) {
-  const [ _, location = null ] = message.split(' ');
+    if(message.length > 150) {
+      client.say(`${process.env.CHANNEL}`, "Too much words brotha!");
+      return;
+    }
+
+    const [ _, location = null ] = message.split(' ');
     weather(location, client);
   }
 
   if (message.startsWith('>')) {
+    if(message.length > 150) {
+      client.say(`${process.env.CHANNEL}`, "Too much words brotha!");
+      return;
+    }
+
     client.say(`${process.env.CHANNEL}`, "Parse some javascript!");
   }
 });
