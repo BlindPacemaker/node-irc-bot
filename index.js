@@ -1,5 +1,9 @@
 require('dotenv').config();
 const irc = require('irc');
+const axios = require('axios');
+
+const weather = require('./weather');
+const doKarma = require('./karma');
 
 const client = new irc.Client('irc.freenode.net', 'jabbadebott', {
     userName: 'jabbadebott',
@@ -10,7 +14,7 @@ const client = new irc.Client('irc.freenode.net', 'jabbadebott', {
     showErrors: false,
     autoRejoin: false,
     autoConnect: true,
-    channels: ['#foo123bar'],
+    channels: [`${process.env.CHANNEL}`],
     secure: false,
     selfSigned: false,
     certExpired: false,
@@ -27,23 +31,32 @@ const client = new irc.Client('irc.freenode.net', 'jabbadebott', {
 
 setTimeout(() => {
   client.say('NickServ', `identify ${process.env.PASSWORD}`);
-  client.join('#learnjavascript');
-}, 60000);
+  // client.join(`${process.env.CHANNEL}`);
+}, 20000);
 
 client.addListener('message', function (from, to, message) {
-  // console.log('FROM: ', from);
-  // console.log('TO: ', to);
-  // console.log('MESSAGE: ', message);
-  // console.log(from + ' => ' + to + ': ' + message);
+  console.log('FROM: ', from);
+  console.log('TO: ', to);
+  console.log('MESSAGE: ', message);
 
-  if (message.startsWith('!')) {
-    client.say('#learnjavascript111', "Say something silly!");
+  if(message.startsWith('!highfive')) {
+    const recipient = message.split(' ')[1];
+
+    doKarma(recipient, client);
+
   }
+
+  if (message.startsWith('!help ')) {
+    console.log('STARTS WITH HELP');
+    client.say(`${process.env.CHANNEL}`, "No!");
+  }
+  if (message.startsWith('!w ')) {
+  const [ _, location = null ] = message.split(' ');
+    weather(location, client);
+  }
+
   if (message.startsWith('>')) {
-    client.say('#learnjavascript111', "Parse some javascript!");
-  }
-  if (message.startsWith('mezod is a dick')) {
-    client.say('#learnjavascript111', "I totally agree!");
+    client.say(`${process.env.CHANNEL}`, "Parse some javascript!");
   }
 });
 
